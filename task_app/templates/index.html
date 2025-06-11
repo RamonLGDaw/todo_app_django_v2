@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Django Todo App</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="static/main.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body style="background: #c4ff7b !important;">
+    <div class="container d-flex justify-content-center align-items-center mt-4">
+      <div class="row w-100 justify-content-center">
+        <div class="col-12 col-md-8 col-lg-7">
+          <h1 class="text-center m-4"><i> Django Todo App</i></h1>
+          <form
+            method="POST"
+            action="{% url 'create_task' %}"
+            class="border p-4 mb-3 border-black rounded-4 bg-light d-flex flex-column justify-content-center w-100 shadow"
+          >
+            {% if max_reached %}
+              <h3 class="text-center text-danger">You've reached the task limit. Please delete some before adding new ones.</h3>
+            {% else %}
+            
+            {% csrf_token %}
+            {{ form }}
+
+            <a href="category" class="mt-3 text-decoration-none">Create a new category</a>
+            <button class="btn btn-primary mt-4">Save</button>
+
+            {% endif %}
+          </form>
+
+          <div>
+              {% if len_list_all > 0 %}
+                <div class="card mb-3 border-black rounded-4 p-3 shadow" style="background-color: rgb(230, 230, 230) !important;">
+                  <div class="d-flex flex-column flex-sm-row flex-wrap justify-content-evenly gap-2 ">
+                    <a href="task_filter/all" class="btn btn-outline-primary text-black {% if filter_type == 'all' %}btn-primary shadow{% endif %}">
+                      All({{ len_list_all }})
+                    </a>
+                    <a href="task_filter/pending" class="btn btn-outline-primary text-black {% if filter_type == 'pending' %}btn-primary shadow{% endif %}">
+                      Pending({{ len_list_pending }})
+                    </a>
+                    <a href="task_filter/completed" class="btn btn-outline-primary text-black {% if filter_type == 'completed' %}btn-primary shadow{% endif %}">
+                      Completed({{ len_list_completed }})
+                    </a>
+                  </div>
+                </div>
+              {% endif %}
+
+
+            {% if task_list %}
+
+           
+            <ul class="p-0 mt-2">
+              {% for item in task_list %}
+              <li class="card bg-light mb-2 d-flex flex-column flex-lg-row justify-content-between align-items-stretch border-black rounded-4 p-3 gap-3 shadow" style="background-color: rgb(230, 230, 230) !important;">
+                
+                <!-- Texto -->
+                <div class="flex-grow-1">
+                  <p class="m-1 fs-6">
+                    <i>Created on {{ item.task_date|date:"F j, Y" }} at {{ item.task_date|date:"g:i a" }}</i>
+                  </p>
+                  <p class="fs-3 text-{{item.category.color}} ms-1 fw-bold mb-0">{% if item.category == None %} Generic {% else %} {{item.category}} {% endif %}</p>
+                  {% if item.done == False %}
+                  <p id="text-item-{{item.id}}" class="mx-1 mt-3 mb-4 text-break text-black fs-4">
+                    {{ item.title }}
+                  </p>
+                  {% else %}
+                  <p id="text-item-{{item.id}}" class="mx-1 mt-3 mb-4 text-break text-black fs-4 text-decoration-line-through">
+                    {{ item.title }}
+                  </p>
+                  {% endif %}
+                </div>
+
+               <div id="btn-container" class="d-flex flex-row flex-lg-column justify-content-evenly justify-content-lg-start align-items-center align-self-stretch align-self-lg-start gap-2">
+
+                  {% if item.done == False %}
+                  <button type="button" class="btn border border-black bg-light" style="background-color: rgb(228, 228, 228);">
+                    <a href="task_check_ok/{{item.id}}" class="text-decoration-none">✔️</a>
+                  </button>
+                  {% else %}
+                  <button type="button" class="btn border border-black bg-light" style="background-color: rgb(228, 228, 228);">
+                    <a href="task_check_no/{{item.id}}" class="text-decoration-none">❌</a>
+                  </button>
+                  {% endif %}
+
+                  <button onclick="showUpdateForm('{{item.id}}')" type="button" class="btn border border-black bg-light" style="background-color: rgb(228, 228, 228);">
+                    ✍️
+                  </button>
+
+                  <button type="button" class="btn border border-black bg-light" style="background-color: rgb(228, 228, 228);" onclick="showConfirmButton('{{item.id}}')">
+                    🗑️
+                  </button>
+                </div>
+              </li>
+
+              <div class="my-2 d-flex justify-content-center align-items-center d-none" id="modal-{{item.id}}">
+                
+                <a class="text-decoration-none text-white btn btn-danger mx-2" href="delete/{{item.id}}">Confirm Delete</a>
+                
+                <button class="btn btn-light" onclick="showConfirmButton('{{item.id}}')">Cancel</button>
+              </div>
+
+              <div id="updateForm-{{item.id}}" class="card d-flex justify-content-center align-items-center pt-2 mt-1 mb-3 border border-dark-subtle d-none">
+                <form action="update/{{item.id}}" method="POST" class="w-100 px-3">
+                  {% csrf_token %}
+                  <input type="text" name="update_task" value="{{item.title}}" class="form-control" />
+                  <div class="d-flex justify-content-center align-items-center my-2 gap-3">
+                    <button class="btn btn-outline-success" type="submit">Update</button>
+                    <button class="btn btn-outline-danger" type="button" onclick="showUpdateForm('{{item.id}}')">Cancel</button>
+                  </div>
+                </form>
+              </div>
+              {% endfor %}
+            </ul>
+            {% elif len_list_all == 0 and not task_list %}
+            <div class="card bg-light border rounded-4 border-black mt-2 shadow" style="background-color: rgb(231, 231, 231) !important;">
+              <h2 class="text-center m-4">No tasks yet, enjoy your free time! 👌</h2>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function showConfirmButton(item_id) {
+        const modal = document.getElementById(`modal-${item_id}`);
+        modal.classList.toggle("d-none");
+      }
+
+      function showUpdateForm(item_id){
+        const update_form = document.getElementById(`updateForm-${item_id}`);
+        update_form.classList.toggle("d-none");
+      }
+    </script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+    ></script>
+  </body>
+</html>
