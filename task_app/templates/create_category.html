@@ -23,7 +23,7 @@
         <h1 class="text-center m-4">Create a new category</h1>
         {% if answer %}
         <p class="text-danger text-center">
-            <i><b>{{answer}}</b></i> category already exists, choose another one.
+            <i><b>{{answer}}</b></i> Category already exists, please choose another name.
         </p>
         {% endif %} {% if error %}
         <p class="text-danger text-center"><b>{{error}}</b></p>
@@ -67,15 +67,6 @@
                             <a class="dropdown-item bg-warning text-white"
                                 onclick="setColor('warning', '#ffc107')">Warning</a>
                         </li>
-                        <!-- <li>
-                            <a class="dropdown-item bg-info text-white" onclick="setColor('info', '#17a2b8')">Info</a>
-                        </li> -->
-                        <!-- <li>
-                            <a class="dropdown-item bg-light text-dark" onclick="setColor('light', '#f8f9fa')">Light</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item bg-dark text-white" onclick="setColor('dark', '#343a40')">Dark</a>
-                        </li> -->
                     </ul>
                 </div>
 
@@ -89,10 +80,10 @@
         </form>
 
         <div id="category_list" class="card border-black shadow p-3 mx-auto bg-light mt-3 d-none">
-            <h3 class="text-center">Delete a category name.</h3>
-            <p class="text-danger text-center">Be careful, the category and all of it tasks will be removed.</p>
+            <h3 class="text-center">Delete a category.</h3>
+            <p class="text-danger text-center">Be careful, the category and all of its tasks will be removed.</p>
             {% if len_category_list == 0 %}
-            <p class="text-center">There is not any category name yet...</p>
+            <p class="text-center">There are no categories to delete...</p>
             {% endif %}
             <ul class=''>
                 {% for category in category_list %}
