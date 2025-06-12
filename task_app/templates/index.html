@@ -20,22 +20,23 @@
       <div class="row w-100 justify-content-center">
         <div class="col-12 col-md-8 col-lg-7">
           <h1 class="text-center m-4"><i> Django Todo App</i></h1>
-          <form
-            method="POST"
-            action="{% url 'create_task' %}"
-            class="border p-4 mb-3 border-black rounded-4 bg-light d-flex flex-column justify-content-center w-100 shadow"
-          >
-            {% if max_reached %}
-              <h3 class="text-center text-danger">You've reached the task limit. Please delete some before adding new ones.</h3>
-            {% else %}
-            
-            {% csrf_token %}
-            {{ form }}
-            <a href="category" class="mt-3 text-decoration-none">Create a new category</a>
-            <button class="btn btn-primary mt-4">Save</button>
+          <form method="POST" action="{% url 'create_task' %}"
+          class="border p-4 mb-3 border-black rounded-4 bg-light d-flex flex-column justify-content-center w-100 shadow">
+          {% if max_reached %}
+          <h3 class="text-center text-danger">You've reached the task limit. Please delete some before adding new ones.</h3>
+          {% else %}
+          <h3 class="text-center">New task</h3>
+          {% csrf_token %}
+          <label for="{{ form.category.id_for_label }}">
+            <p>1. Choose or<a href="{% url 'category' %}" class="mt-3 text-decoration-none"> create a new category:</a></p>
+          </label>
+        
+          {{ form }}
 
-            {% endif %}
-          </form>
+          <button class="btn btn-primary mt-4">Save</button>
+
+          {% endif %}
+        </form>
 
           <div>
               {% if len_list_all > 0 %}
